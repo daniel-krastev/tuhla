@@ -1,0 +1,38 @@
+; Please config file
+; Leaving this file as is is enough to use plz to build your project.
+; Please will stay on whatever version you currently have until you run
+; 'plz update', when it will download the latest available version.
+;
+; Or you can uncomment the following to pin everyone to a particular version;
+; when you change it all users will automatically get updated.
+; [please]
+; version = 16.27.1
+
+[Plugin "go"]
+Target = //plugins:go
+FeatureFlags = go_get
+
+; [licences]
+; accept = MIT
+; accept = MIT License
+; accept = BSD
+; accept = BSD License
+; accept = Simplified BSD
+; accept = BSD 3-Clause
+; accept = BSD-3-Clause
+; accept = BSD-2-Clause
+; accept = 3-Clause BSD License
+; accept = New BSD License
+; accept = Apache Software License
+; accept = Apache 2.0
+; accept = Apache-2.0
+; accept = Apache License, Version 2.0
+; accept = The Apache Software License, Version 2.0
+; accept = PSF
+; accept = ASL
+; accept = MPL-2.0
+; accept = LGPL
+; accept = Artistic License
+; accept = ISC
+; # Not really a licence, but Bazel projects commonly describe things this way.
+; accept = notice
