@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	"tuhla.com/common/db"
 )
 
-const connString = "postgresql://root@localhost:26257/defaultdb?sslmode=disable"
+const connString = "postgresql://root@localhost:26257/tuhla?sslmode=disable"
 
 func main() {
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, connString)
+	conn, err := db.Connect(ctx, connString)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
