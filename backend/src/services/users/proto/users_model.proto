@@ -1,0 +1,6 @@
+syntax = "proto3";
+package usersmodel;
+
+option go_package = "tuhla/services/users/proto/usersmodelpb";
+
+message User { string id = 1; }
