@@ -1,13 +1,33 @@
 package controller
 
 import (
-	"tuhla/common/db"
+	"context"
+	"errors"
+	"tuhla/services/users/proto/usersmodelpb"
+	"tuhla/services/users/proto/usersservicepb"
 )
 
-type Controller struct {
-	db *db.DBConnection
+type Storage interface {
+	CreateUser(requestID, userID string) (string, error)
 }
 
-func New(db *db.DBConnection) *Controller {
-	return &Controller{db}
+type Controller struct {
+	storage Storage
+	usersservicepb.UnimplementedUsersServer
+}
+
+func New(storage Storage) *Controller {
+	return &Controller{
+		storage: storage,
+	}
+}
+
+func (c *Controller) CreateUser(ctx context.Context, createUserReq *usersservicepb.CreateUserRequest) (*usersmodelpb.User, error) {
+	if createUserReq == nil || createUserReq.User == nil {
+		return nil, errors.New("no request found")
+	}
+	createdUser := &usersmodelpb.User{
+		Id: createUserReq.User.Id,
+	}
+	return createdUser, nil
 }
