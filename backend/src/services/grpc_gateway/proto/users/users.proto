@@ -1,0 +1,15 @@
+syntax = "proto3";
+package users;
+
+option go_package = "tuhla/services/grpc_gateway/proto/users/userspb";
+
+service Users {
+  rpc CreateUser(CreateUserRequest) returns (User) {}
+}
+
+message CreateUserRequest {
+  string requestId = 1;
+  User user = 2;
+}
+
+message User { string id = 1; }

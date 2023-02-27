@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
 	"tuhla/services/users/proto/usersmodelpb"
 	"tuhla/services/users/proto/usersservicepb"
 )
@@ -27,7 +28,7 @@ func (c *Controller) CreateUser(ctx context.Context, createUserReq *usersservice
 		return nil, errors.New("no request found")
 	}
 	createdUser := &usersmodelpb.User{
-		Id: createUserReq.User.Id,
+		Id: fmt.Sprintf("%s_fm.UsersService", createUserReq.User.Id),
 	}
 	return createdUser, nil
 }

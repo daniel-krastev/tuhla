@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"net"
 	"os"
@@ -15,29 +16,35 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const connString = "postgresql://root@localhost:26257/tuhla?sslmode=disable"
+var (
+	databaseURL    = flag.String("database_url", "postgresql://root@localhost:26257/tuhla?sslmode=disable", "database connection URL")
+	serviceAddress = flag.String("service_address", "localhost", "service address")
+	servicePort    = flag.Int("service_port", 1124, "service port")
+)
 
 func main() {
+	flag.Parse()
+
 	ctx := context.Background()
-	conn, err := db.Connect(ctx, connString)
+
+	conn, err := db.Connect(ctx, *databaseURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
 	defer conn.Close(ctx)
 
-	userController := controller.New(dbstorage.New(conn))
+	controller := controller.New(dbstorage.New(conn))
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 1123))
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", *serviceAddress, *servicePort))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot listen on the localhost: %v\n", err)
 		os.Exit(1)
 	}
 
-	opts := []grpc.ServerOption{}
-	grpcServer := grpc.NewServer(opts...)
+	grpcServer := grpc.NewServer([]grpc.ServerOption{}...)
 	reflection.Register(grpcServer)
-	usersservicepb.RegisterUsersServer(grpcServer, userController)
+	usersservicepb.RegisterUsersServer(grpcServer, controller)
 
 	fmt.Println("Starting user service...")
 	err = grpcServer.Serve(lis)
@@ -45,5 +52,4 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Cannot serve grpc server: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("User service stopped...")
 }

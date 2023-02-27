@@ -1,0 +1,15 @@
+syntax = "proto3";
+package housesservice;
+
+import "houses_model.proto";
+
+option go_package = "tuhla/services/houses/proto/housesservicepb";
+
+service Houses {
+  rpc CreateHouse(CreateHouseRequest) returns (housesmodel.House) {}
+}
+
+message CreateHouseRequest {
+  string requestId = 1;
+  housesmodel.House house = 2;
+}

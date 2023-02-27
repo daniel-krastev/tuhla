@@ -1,0 +1,6 @@
+syntax = "proto3";
+package housesmodel;
+
+option go_package = "tuhla/services/houses/proto/housesmodelpb";
+
+message House { string id = 1; }

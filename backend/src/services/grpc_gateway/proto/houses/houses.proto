@@ -1,0 +1,15 @@
+syntax = "proto3";
+package houses;
+
+option go_package = "tuhla/services/grpc_gateway/proto/houses/housespb";
+
+service Houses {
+  rpc CreateHouse(CreateHouseRequest) returns (House) {}
+}
+
+message CreateHouseRequest {
+  string requestId = 1;
+  House house = 2;
+}
+
+message House { string id = 1; }
