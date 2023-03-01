@@ -1,15 +1,15 @@
 syntax = "proto3";
 package usersservice;
 
-import "users_model.proto";
-
 option go_package = "tuhla/services/users/proto/usersservicepb";
+
+import "users_model.proto";
 
 service Users {
   rpc CreateUser(CreateUserRequest) returns (usersmodel.User) {}
 }
 
 message CreateUserRequest {
-  string requestId = 1;
+  string request_id = 1;
   usersmodel.User user = 2;
 }

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"net"
+	"net/http"
 	"os"
 
 	"tuhla/services/grpc_gateway/controller"
@@ -13,8 +15,10 @@ import (
 	"tuhla/services/houses/proto/housesservicepb"
 	"tuhla/services/users/proto/usersservicepb"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -33,6 +37,9 @@ var (
 
 func main() {
 	flag.Parse()
+
+	log := grpclog.NewLoggerV2(os.Stdout, ioutil.Discard, ioutil.Discard)
+	grpclog.SetLoggerV2(log)
 
 	// Create internal service clients.
 	usersConn, err := grpc.Dial(fmt.Sprintf("%s:%d", *usersAddress, *usersPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -60,11 +67,32 @@ func main() {
 	userspb.RegisterUsersServer(grpcServer, controller)
 	housespb.RegisterHousesServer(grpcServer, controller)
 
-	fmt.Println("Starting user service...")
-	err = grpcServer.Serve(lis)
+	go func() {
+		log.Fatal(grpcServer.Serve(lis))
+	}()
+	fmt.Println("gRPC service started...")
+	
+	log.Fatal(run())
+}
+
+func run() error {
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	// Register gRPC server endpoint
+	// Note: Make sure the gRPC server is running properly and accessible
+	mux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	err := userspb.RegisterUsersHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", *serviceAddress, *servicePort), opts)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Cannot serve grpc server: %v\n", err)
-		os.Exit(1)
+		return err
 	}
-	fmt.Println("User service stopped...")
+	err = housespb.RegisterHousesHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", *serviceAddress, *servicePort), opts)
+	if err != nil {
+		return err
+	}
+
+	// Start HTTP server (and proxy calls to gRPC server endpoint)
+	return http.ListenAndServe(":1122", mux)
 }

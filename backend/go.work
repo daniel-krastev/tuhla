@@ -2,7 +2,7 @@ go 1.20
 
 use (
 	./src/common
-	./src/services/users
-	./src/services/houses
 	./src/services/grpc_gateway
+	./src/services/houses
+	./src/services/users
 )

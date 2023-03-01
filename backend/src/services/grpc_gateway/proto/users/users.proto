@@ -3,12 +3,19 @@ package users;
 
 option go_package = "tuhla/services/grpc_gateway/proto/users/userspb";
 
+import "google/api/annotations.proto";
+
 service Users {
-  rpc CreateUser(CreateUserRequest) returns (User) {}
+  rpc CreateUser(CreateUserRequest) returns (User) {
+    option (google.api.http) = {
+      post : "/api/v1/users"
+      body : "*"
+    };
+  }
 }
 
 message CreateUserRequest {
-  string requestId = 1;
+  string request_id = 1;
   User user = 2;
 }
 

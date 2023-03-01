@@ -3,12 +3,19 @@ package houses;
 
 option go_package = "tuhla/services/grpc_gateway/proto/houses/housespb";
 
+import "google/api/annotations.proto";
+
 service Houses {
-  rpc CreateHouse(CreateHouseRequest) returns (House) {}
+  rpc CreateHouse(CreateHouseRequest) returns (House) {
+    option (google.api.http) = {
+      post : "/api/v1/houses"
+      body : "*"
+    };
+  }
 }
 
 message CreateHouseRequest {
-  string requestId = 1;
+  string request_id = 1;
   House house = 2;
 }
 
