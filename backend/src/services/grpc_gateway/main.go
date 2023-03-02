@@ -7,7 +7,9 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"net/http/httputil"
 	"os"
+	"strings"
 
 	"tuhla/services/grpc_gateway/controller"
 	"tuhla/services/grpc_gateway/proto/houses/housespb"
@@ -23,8 +25,9 @@ import (
 )
 
 var (
-	serviceAddress = flag.String("service_address", "localhost", "service address")
-	servicePort    = flag.Int("service_port", 1123, "service port")
+	serviceAddress  = flag.String("service_address", "localhost", "service address")
+	gRPCservicePort = flag.Int("grpc_service_port", 1123, "grpc service port")
+	HTTPservicePort = flag.Int("http_service_port", 1122, "http service port")
 
 	// users address
 	usersAddress = flag.String("users_address", "localhost", "users address")
@@ -33,13 +36,16 @@ var (
 	// houses address
 	housesAddress = flag.String("houses_address", "localhost", "houses address")
 	housesPort    = flag.Int("houses_port", 1125, "houses port")
+
+	log = grpclog.NewLoggerV2(os.Stdout, ioutil.Discard, ioutil.Discard)
 )
+
+func init() {
+	grpclog.SetLoggerV2(log)
+}
 
 func main() {
 	flag.Parse()
-
-	log := grpclog.NewLoggerV2(os.Stdout, ioutil.Discard, ioutil.Discard)
-	grpclog.SetLoggerV2(log)
 
 	// Create internal service clients.
 	usersConn, err := grpc.Dial(fmt.Sprintf("%s:%d", *usersAddress, *usersPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -56,7 +62,7 @@ func main() {
 
 	controller := controller.New(usersClient, housesClient)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", *serviceAddress, *servicePort))
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", *serviceAddress, *gRPCservicePort))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot listen on the localhost: %v\n", err)
 		os.Exit(1)
@@ -71,7 +77,7 @@ func main() {
 		log.Fatal(grpcServer.Serve(lis))
 	}()
 	fmt.Println("gRPC service started...")
-	
+
 	log.Fatal(run())
 }
 
@@ -84,15 +90,50 @@ func run() error {
 	// Note: Make sure the gRPC server is running properly and accessible
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := userspb.RegisterUsersHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", *serviceAddress, *servicePort), opts)
+	err := userspb.RegisterUsersHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", *serviceAddress, *gRPCservicePort), opts)
 	if err != nil {
 		return err
 	}
-	err = housespb.RegisterHousesHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", *serviceAddress, *servicePort), opts)
+	err = housespb.RegisterHousesHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", *serviceAddress, *gRPCservicePort), opts)
 	if err != nil {
 		return err
 	}
 
-	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	return http.ListenAndServe(":1122", mux)
+	httpServer := &http.Server{
+		Addr: fmt.Sprintf("%s:%d", *serviceAddress, *HTTPservicePort),
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Dump the request body in a human-readable format
+			requestDump, err := httputil.DumpRequest(r, true)
+			if err != nil {
+				http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
+				return
+			}
+			// Print the request body to standard output
+			fmt.Println(string(requestDump))
+
+			// Serve CORS requests
+			if origin := r.Header.Get("Origin"); origin != "" {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				if r.Method == "OPTIONS" && r.Header.Get("Access-Control-Request-Method") != "" {
+					preflightHandler(w, r)
+					return
+				}
+			}
+
+			mux.ServeHTTP(w, r)
+		}),
+	}
+
+	return httpServer.ListenAndServe()
+}
+
+// preflightHandler adds the necessary headers in order to serve
+// CORS from any origin using the methods "GET", "HEAD", "POST", "PUT", "DELETE"
+// We insist, don't do this without consideration in production systems.
+func preflightHandler(w http.ResponseWriter, r *http.Request) {
+	headers := []string{"Content-Type", "Accept", "Authorization"}
+	w.Header().Set("Access-Control-Allow-Headers", strings.Join(headers, ","))
+	methods := []string{"GET", "HEAD", "POST", "PUT", "DELETE"}
+	w.Header().Set("Access-Control-Allow-Methods", strings.Join(methods, ","))
+	log.Infof("preflight request for %s", r.URL.Path)
 }
