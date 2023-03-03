@@ -15,7 +15,7 @@ import (
 
 var (
 	_              = flag.String("database_url", "postgresql://root@localhost:26257/tuhla?sslmode=disable", "database connection URL")
-	serviceAddress = flag.String("service_address", "localhost", "service address")
+	serviceAddress = flag.String("service_address", "", "service address")
 	servicePort    = flag.Int("service_port", 1125, "service port")
 )
 

@@ -25,7 +25,7 @@ import (
 )
 
 var (
-	serviceAddress  = flag.String("service_address", "localhost", "service address")
+	serviceAddress  = flag.String("service_address", "", "service address")
 	gRPCservicePort = flag.Int("grpc_service_port", 1123, "grpc service port")
 	HTTPservicePort = flag.Int("http_service_port", 1122, "http service port")
 
