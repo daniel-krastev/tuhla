@@ -1,8 +1,11 @@
 <script lang="ts">
 	import House from './House.svelte';
-	let inputHouseID = '';
+	let inputHouseID = '';``
 
-	async function callCreate(): Promise<any> {
+	async function fetchCreate(): Promise<any> {
+		if (inputHouseID === '') {
+			return;
+		}
 		const res = await fetch('http://192.168.1.194:1122/api/v1/houses', {
 			method: 'POST',
 			headers: {
@@ -23,18 +26,17 @@
 			throw new Error(data);
 		}
 	}
-	let clicked: boolean = false;
+	let promise: Promise<any> = fetchCreate();
+	function callFetchCreate() {
+		promise = fetchCreate();
+	}
 </script>
 
 <input bind:value={inputHouseID} />
-<button on:click={() => (clicked = true)}>Create</button>
+<button on:click={callFetchCreate}>Create</button>
 
-{#if clicked}
-	{#await callCreate()}
-		<p>loading</p>
-	{:then value}
-		<House id={value["id"]+"_fmSvelte"} />
-	{:catch error}
-		<p style="color: red">{error.message}</p>
-	{/await}
-{/if}
+{#await promise then value}
+	<House id={value['id'] + '_fmSvelte'} />
+{:catch error}
+	<p style="color: red">{error.message}</p>
+{/await}
