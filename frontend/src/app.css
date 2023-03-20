@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .bb {
-	/* @apply border-2 border-black; */
+	/* @apply border-[1px] border-black; */
 }
