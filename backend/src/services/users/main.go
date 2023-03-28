@@ -1,15 +1,15 @@
 package main
 
 import (
-	"context"
+	// "context"
 	"flag"
 	"fmt"
 	"net"
 	"os"
 
-	"tuhla/common/db"
+	_ "tuhla/common/db"
 	"tuhla/services/users/controller"
-	"tuhla/services/users/dbstorage"
+	_ "tuhla/services/users/dbstorage"
 	"tuhla/services/users/proto/usersservicepb"
 
 	"google.golang.org/grpc"
@@ -22,19 +22,22 @@ var (
 	servicePort    = flag.Int("service_port", 1124, "service port")
 )
 
+// force docker rebuild 12
+
 func main() {
 	flag.Parse()
 
-	ctx := context.Background()
+	// ctx = context.Background()
 
-	conn, err := db.Connect(ctx, *databaseURL)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-	defer conn.Close(ctx)
+	// conn, err := db.Connect(ctx, *databaseURL)
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+	// 	os.Exit(1)
+	// }
+	// defer conn.Close(ctx)
 
-	controller := controller.New(dbstorage.New(conn))
+	// controller := controller.New(dbstorage.New(conn))
+	controller := controller.New(nil)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", *serviceAddress, *servicePort))
 	if err != nil {

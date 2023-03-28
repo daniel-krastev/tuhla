@@ -4,7 +4,7 @@
 <div class="bb h-[40rem] w-4/12 rounded-2xl bg-white">
 	<div class="bb flex flex-col items-center">
 		<div class="bb relative flex w-full justify-center">
-			<button on:click class="bb absolute top-0 left-0 m-2 p-2 hover:rounded-full hover:bg-black/5">
+			<button on:click class="bb absolute top-0 left-0 m-2 p-2 hover:rounded-full hover:bg-black/10">
 				<svg viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bb h-7 w-7">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
 				</svg>

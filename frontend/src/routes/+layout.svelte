@@ -28,23 +28,23 @@
 		</div>
 		<ul class="bb flex flex-auto items-center space-x-12 p-1 pl-48">
 			<li class="bb">
-				<a class="bb p-3 hover:rounded-full hover:border-none hover:bg-black/5" href="/buy"
+				<a class="bb p-3 hover:rounded-full hover:border-none hover:bg-black/10" href="/buy"
 					>продажби</a
 				>
 			</li>
 			<li class="bb">
-				<a class="bb p-3 hover:rounded-full hover:border-none hover:bg-black/5" href="/sell"
+				<a class="bb p-3 hover:rounded-full hover:border-none hover:bg-black/10" href="/sell"
 					>наеми</a
 				>
 			</li>
 			<li class="bb">
-				<a class="bb p-3 hover:rounded-full hover:border-none hover:bg-black/5" href="/evaluate"
+				<a class="bb p-3 hover:rounded-full hover:border-none hover:bg-black/10" href="/evaluate"
 					>оценки</a
 				>
 			</li>
 		</ul>
 		<button
-			class="bb m-1 mr-12 flex items-center justify-center p-3 hover:rounded-full hover:border-none hover:bg-black/5"
+			class="bb m-1 mr-12 flex items-center justify-center p-3 hover:rounded-full hover:border-none hover:bg-black/10"
 			on:click={(e) => {
 				loginDialog = !loginDialog;
 			}}

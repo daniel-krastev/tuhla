@@ -15,3 +15,4 @@ curl -X POST http://localhost:1122/api/v1/users \
             "id": "user_id"
         }
     }' | jq
+
