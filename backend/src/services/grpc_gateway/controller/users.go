@@ -22,5 +22,5 @@ func (c *Controller) CreateUser(ctx context.Context, createUserReq *userspb.Crea
 	if err != nil {
 		return nil, fmt.Errorf("error from internal users service: %v", err)
 	}
-	return &userspb.User{Id: fmt.Sprintf("%s_FmGRPCGateway", user.Id)}, nil
+	return &userspb.User{Id: fmt.Sprintf("%s_from.GRPCGateway", user.Id)}, nil
 }

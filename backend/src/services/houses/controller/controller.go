@@ -22,7 +22,7 @@ func (c *Controller) CreateHouse(ctx context.Context, createHousesReq *housesser
 		return nil, errors.New("no request found")
 	}
 	createdHouse := &housesmodelpb.House{
-		Id: fmt.Sprintf("%s_fm.HousesService", createHousesReq.House.Id),
+		Id: fmt.Sprintf("%s_from.HousesService", createHousesReq.House.Id),
 	}
 	return createdHouse, nil
 }

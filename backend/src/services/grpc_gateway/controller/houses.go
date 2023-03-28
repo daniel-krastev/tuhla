@@ -22,5 +22,5 @@ func (c *Controller) CreateHouse(ctx context.Context, createHouseReq *housespb.C
 	if err != nil {
 		return nil, fmt.Errorf("error from internal houses service: %v", err)
 	}
-	return &housespb.House{Id: fmt.Sprintf("%s_FmGRPCGateway", house.Id)}, nil
+	return &housespb.House{Id: fmt.Sprintf("%s_from.GRPCGateway", house.Id)}, nil
 }

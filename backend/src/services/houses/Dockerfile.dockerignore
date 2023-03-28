@@ -1,0 +1,7 @@
+# Ignore everything
+*
+
+# Allow files and directories
+!go.work
+!go.work.sum
+!/src

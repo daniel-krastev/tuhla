@@ -28,7 +28,7 @@ func (c *Controller) CreateUser(ctx context.Context, createUserReq *usersservice
 		return nil, errors.New("no request found")
 	}
 	createdUser := &usersmodelpb.User{
-		Id: fmt.Sprintf("%s_fm.UsersService", createUserReq.User.Id),
+		Id: fmt.Sprintf("%s_from.UsersService", createUserReq.User.Id),
 	}
 	return createdUser, nil
 }

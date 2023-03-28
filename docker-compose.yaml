@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  grpc_gateway:
+    build:
+      dockerfile: ./src/services/grpc_gateway/Dockerfile
+      context: ./backend
+    container_name: grpc-gateway
+    network_mode: host
+    depends_on:
+      - users
+      - houses
+  users:
+    build:
+      dockerfile: ./src/services/users/Dockerfile
+      context: ./backend
+    container_name: users-service
+    network_mode: host
+  houses:
+    build:
+      dockerfile: ./src/services/houses/Dockerfile
+      context: ./backend
+    container_name: houses-service
+    network_mode: host
