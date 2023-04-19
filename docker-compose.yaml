@@ -6,6 +6,8 @@ services:
       context: ./backend
     container_name: grpc-gateway
     network_mode: host
+    volumes:
+      - appVol:/app/Vol
     depends_on:
       - users
       - houses
@@ -21,3 +23,5 @@ services:
       context: ./backend
     container_name: houses-service
     network_mode: host
+volumes:
+  appVol:
